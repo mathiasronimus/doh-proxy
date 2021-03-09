@@ -7,6 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 import argparse
+import asyncio
 import binascii
 import base64
 import dns.exception
@@ -20,6 +21,15 @@ from typing import Dict, List, Tuple, Optional
 
 from dohproxy import constants, server_protocol, __version__
 
+
+def get_client_ip(transport: asyncio.BaseTransport) -> Tuple[str, None]:
+    """ Helper function to return the IP of the client connecting to us.
+    Returns None on error.
+    """
+    peername = transport.get_extra_info('peername')
+    if peername:
+        return peername[0]
+    return None
 
 def msg2question(msg: dns.message.Message) -> str:
     """ Helper function to return a string of name class and type
